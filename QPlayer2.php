@@ -6,7 +6,10 @@ Author: MoeShin
 Version: 2.0.0
 Author URI: https://www.moeshin.com/
 */
-class QPlayer2 {
+class QPlayer2
+{
+    const verJQ = '3.5.1';
+    const verMarquee = '1.5.0';
 
     const OPTION_NAME = 'QPlayer2_options';
     const OPTION_GROUP = 'QPlayer2_group';
@@ -21,6 +24,8 @@ class QPlayer2 {
             $this->onAdmin();
         }
         add_action('wp_footer', array($this, 'footer'));
+        add_action('wp_ajax_QPlayer2', array($this, 'ajax'));
+        add_action('wp_ajax_nopriv_QPlayer2', array($this, 'ajax'));
     }
 
     private function initOptions()
@@ -275,10 +280,66 @@ HTML;
         return $r;
     }
 
+    private function getBool($key)
+    {
+        return isset($this->options[$key]);
+    }
+
+    private function getBoolString($key)
+    {
+        return isset($this->options[$key]) ? 'true' : 'false';
+    }
+
+    private function getString($key)
+    {
+        return htmlspecialchars_decode($this->options[$key], ENT_QUOTES);
+    }
+
     public function footer()
     {
         $this->initOptions();
-        echo 'QPlayer2 Hooked!';
+        $url = plugins_url('assets', __FILE__);
+        var_dump($url);
+        $cdn = $this->getBool('cdn');
+        if ($this->getBool('jQuery')) {
+            $prefix = $cdn ? 'https://cdn.jsdelivr.net/npm/jquery@' . self::verJQ . '/dist' : $url;
+            echo '<script src="' . $prefix  . '/jquery.min.js"></script>';
+        }
+        $prefix = $cdn ? 'https://cdn.jsdelivr.net/npm/jquery.marquee@' . self::verMarquee : $url;
+        echo '<script src="' . $prefix . '/jquery.marquee.min.js"></script>';
+        if ($cdn) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            $info = get_plugin_data(__FILE__, false, false);
+            $prefix = 'https://cdn.jsdelivr.net/gh/moeshin/QPlayer2-Typecho@' . $info['Version'] . '/assets';
+        } else {
+            $prefix = $url;
+        }
+        $api = admin_url('admin-ajax.php?action=QPlayer2');
+        /**
+         * @noinspection BadExpressionStatementJS
+         * @noinspection JSUnnecessarySemicolon
+         */
+        echo <<<HTML
+<link rel="stylesheet" href="$prefix/QPlayer.css">
+<script src="$prefix/QPlayer.js"></script>
+<script src="$prefix/QPlayer-plugin.js"></script>
+<script>
+$(function() {
+    var q = QPlayer;
+    var plugin = q.plugin;
+    plugin.api = '$api';
+    plugin.setList({$this->getString('list')});
+    q.isRoate = {$this->getBoolString('isRotate')};
+    q.isShuffle = {$this->getBoolString('isShuffle')};
+    q.setColor('{$this->getString('color')}');
+});
+</script>
+HTML;
+    }
+
+    public function ajax() {
+        echo '{"message": "ALERT!"}';
+        exit;
     }
 }
 
