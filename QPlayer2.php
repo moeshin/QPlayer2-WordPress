@@ -338,7 +338,9 @@ HTML;
     }
 
     public function ajax() {
-        echo '{"message": "ALERT!"}';
+        $this->initOptions();
+        require_once 'QPlayer2_Ajax.php';
+        new QPlayer2_Ajax($this->options);
         exit;
     }
 }
