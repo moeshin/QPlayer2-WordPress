@@ -6,6 +6,9 @@ Author: MoeShin
 Version: 2.0.0
 Author URI: https://www.moeshin.com/
 */
+
+use QPlayer\Cache\Cache;
+
 class QPlayer2
 {
     const verJQ = '3.5.1';
@@ -40,7 +43,8 @@ class QPlayer2
         $r = array(
             'bitrate' => '320',
             'color' => '#EE1122',
-            'list' => '[{
+            'list' => <<<JSON
+[{
     "name": "Nightglow",
     "artist": "蔡健雅",
     "audio": "https://cdn.jsdelivr.net/gh/moeshin/QPlayer-res/Nightglow.mp3",
@@ -52,7 +56,9 @@ class QPlayer2
     "artist": "やまだ豊",
     "audio": "https://cdn.jsdelivr.net/gh/moeshin/QPlayer-res/やわらかな光.mp3",
     "cover": "https://cdn.jsdelivr.net/gh/moeshin/QPlayer-res/やわらかな光.jpg"
-}]'
+}]
+JSON,
+            'cacheType' => 'none'
         );
         foreach ($names as $name) {
             $r[$name] = true;
@@ -128,8 +134,7 @@ class QPlayer2
                 '128' => __('流畅品质 128K'),
                 '192' => __('清晰品质 192K'),
                 '320' => __('高品质 320K')
-            ),
-            '320'
+            )
         );
 
         $this->textarea(
@@ -152,6 +157,40 @@ HTML)
 如果您是网易云音乐的会员或者使用私人雷达，可以将您的 cookie 的 MUSIC_U 填入此处来获取云盘等付费资源，听歌将不会计入下载次数<br>
 <strong>如果不知道这是什么意思，忽略即可</strong>
 HTML)
+        );
+
+        $this->radio(
+            'cacheType',
+            __('缓存类型'),
+            array(
+                'none' => __('无'),
+                'database' => __('数据库'),
+                'memcached' => __('Memcached'),
+                'redis' => __('Redis')
+            )
+        );
+
+        $this->text(
+            'cacheHost',
+            __('缓存地址'),
+            __('若使用数据库缓存，请忽略此项。默认：127.0.0.1')
+        );
+
+        $this->text(
+            'cachePort',
+            __('缓存端口'),
+            __('若使用数据库缓存，请忽略此项。默认，Memcached：11211；Redis：6379')
+        );
+
+        add_settings_field(
+            'cleanCache',
+            null,
+            function () {
+                echo '<a target="_blank" href="' . admin_url('admin-ajax.php?action=QPlayer2') . '&do=flush">
+<button type="button" class="button">' . __('清除缓存') . '</button></a>';
+            },
+            self::PAGE,
+            self::SECTION
         );
     }
 
@@ -191,19 +230,15 @@ HTML;
         );
     }
 
-    private function radio($id, $title, $options, $default)
+    private function radio($id, $title, $options)
     {
-        $option = $this->options[$id];
-        if (!isset($option)) {
-            $option = $default;
-        }
         $that = $this;
         $this->addSettingsField(
             $id,
             $title,
-            function () use ($that, $id, $options, $option) {
+            function () use ($that, $id, $options) {
                 foreach ($options as $value => $text) {
-                    $checked = $that->checked($option == $value);
+                    $checked = $that->checked($that->options[$id] == $value);
                     $cid = "$id-$value";
                     echo <<<HTML
 <p>
@@ -256,28 +291,92 @@ HTML;
     public function sanitize($input)
     {
         $r = array();
-        $keys = array('cdn', 'jQuery', 'isRotate', 'isShuffle', 'bitrate');
+
+        // Normal
+        $keys = array(
+            'cdn',
+            'jQuery',
+            'isRotate',
+            'isShuffle',
+            'bitrate',
+            'cacheType'
+        );
         foreach ($keys as $key) {
             $in = $input[$key];
             if (isset($in)) {
                 $r[$key] = $in;
             }
         }
-        $keys = array('color');
+
+        // Text
+        $keys = array(
+            'color',
+            'cacheHost',
+            'cachePort'
+        );
         foreach ($keys as $key) {
             $in = $input[$key];
             if (isset($in)) {
                 $r[$key] = sanitize_text_field($in);
             }
         }
-        $keys = array('list', 'cookie');
+
+        // Textarea
+        $keys = array(
+            'list',
+            'cookie'
+        );
         foreach ($keys as $key) {
             $in = $input[$key];
             if (isset($in)) {
                 $r[$key] = sanitize_textarea_field($in);
             }
         }
+
+        $options = $this->options;
+
+        // Handle Cache
+        require_once 'libs/cache/Cache.php';
+        $cacheTypeNow = $input['cacheType'];
+        $cacheArgs = array(
+            $cacheTypeNow,
+            $options['cacheHost'],
+            $options['cachePort']
+        );
+        $cacheTypeLast = $options['cacheType'];
+        $cacheBuild = array('QPlayer\Cache\Cache', 'Build');
+        $isNotNoneNow = $cacheTypeNow != 'none';
+        if ($cacheTypeNow != $cacheTypeLast) {
+            if ($isNotNoneNow) {
+                $cache = call_user_func_array($cacheBuild, $cacheArgs);
+                $cache->install();
+                $cache->test();
+            }
+            if ($cacheTypeLast != 'none') {
+                Cache::UninstallWithOptions($options);
+            }
+        } elseif (
+            $isNotNoneNow &&
+            $cacheTypeNow != 'database' &&
+            self::compareCacheConfig($input, $options)
+        ) {
+            $cache = call_user_func_array($cacheBuild, $cacheArgs);
+            $cache->test();
+        }
+
         return $r;
+    }
+
+    private static function compareCacheConfig($now, $last) {
+        $keys = array('cacheHost', 'cachePort');
+        $length = count($keys);
+        for ($i = 0; $i < $length; ++$i) {
+            $key = $keys[$i];
+            if ($now[$key] != $last->$key) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function getBool($key)
@@ -337,6 +436,9 @@ $(function() {
 HTML;
     }
 
+    /**
+     * @throws Exception
+     */
     public function ajax() {
         $this->initOptions();
         require_once 'QPlayer2_Ajax.php';
