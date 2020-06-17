@@ -4,7 +4,7 @@ Plugin Name: QPlayer2
 Description: 一款简洁小巧的 HTML5 底部悬浮音乐播放器
 Author: MoeShin
 Version: 2.0.0
-Author URI: https://www.moeshin.com/
+Author URI: https://moeshin.com/
 */
 
 use QPlayer\Cache\Cache;
@@ -436,7 +436,7 @@ HTML;
         if ($cdn) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
             $info = get_plugin_data(__FILE__, false, false);
-            $prefix = 'https://cdn.jsdelivr.net/gh/moeshin/QPlayer2-Typecho@' . $info['Version'] . '/assets';
+            $prefix = 'https://cdn.jsdelivr.net/gh/moeshin/QPlayer2-WordPress@' . $info['Version'] . '/assets';
         } else {
             $prefix = $url;
         }
