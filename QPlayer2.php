@@ -29,10 +29,24 @@ class QPlayer2
         add_action('wp_footer', array($this, 'footer'));
         add_action('wp_ajax_QPlayer2', array($this, 'ajax'));
         add_action('wp_ajax_nopriv_QPlayer2', array($this, 'ajax'));
+        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+    }
+
+    public function deactivate() {
+        $options = $this->options;
+        $cacheType = $options['cacheType'];
+        if ($cacheType != 'none') {
+            $this->requireCache();
+            Cache::UninstallWithOptions($options);
+        }
+        delete_option(QPlayer2::OPTION_NAME);
     }
 
     private function initOptions()
     {
+        if ($this->options != null) {
+            return;
+        }
         $options = get_option(self::OPTION_NAME, $this->getDefault());
         $this->options = is_array($options) ? $options : array();
     }
@@ -141,7 +155,7 @@ JSON,
             'list',
             __('歌曲别表'),
             __(<<<HTML
-JSON 格式的数组，具体属性请看 <a href="https://github.com/moeshin/QPlayer2#list-item">这里</a><br>
+<a href="https://www.json.cn/">JSON 格式</a> 的数组，具体属性请看 <a href="https://github.com/moeshin/QPlayer2#list-item">这里</a><br>
 您也可以添加，例如：私人雷达<br>
 <code>{"server": "netease", "type": "playlist", "id": "3136952023"}</code><br>
 来引入第三方资源，此功能基于 <a href="https://github.com/metowolf/Meting">Meting</a><br>
@@ -336,7 +350,7 @@ HTML;
         $options = $this->options;
 
         // Handle Cache
-        require_once 'libs/cache/Cache.php';
+        $this->requireCache();
         $cacheTypeNow = $input['cacheType'];
         $cacheArgs = array(
             $cacheTypeNow,
@@ -440,10 +454,13 @@ HTML;
      * @throws Exception
      */
     public function ajax() {
-        $this->initOptions();
         require_once 'QPlayer2_Ajax.php';
         new QPlayer2_Ajax($this->options);
         exit;
+    }
+
+    private function requireCache() {
+        require_once 'libs/cache/Cache.php';
     }
 }
 
