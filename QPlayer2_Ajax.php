@@ -17,15 +17,15 @@ class QPlayer2_Ajax
         if ($do == 'flush') {
             try {
                 if ($options['cacheType'] == 'none') {
-                    echo __('没有配置缓存！');
+                    echo __('没有配置缓存！', 'QPlayer2');
                 } else {
                     Cache::BuildWithOptions($options)->flush();
-                    echo __('操作成功！');
+                    echo __('操作成功！', 'QPlayer2');
                 }
-                echo __('5 秒后自动关闭！');
+                echo __('5 秒后自动关闭！', 'QPlayer2');
                 echo '<script>setTimeout(window.close, 5000);</script>';
             } catch (Exception $e) {
-                echo '<p>' . __('操作失败！') . '</p>';
+                echo '<p>' . __('操作失败！', 'QPlayer2') . '</p>';
                 echo '<p>' . $e->getMessage() . '</p>';
                 echo '<pre>';
                 echo $e->getTraceAsString();

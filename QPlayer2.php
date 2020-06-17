@@ -93,7 +93,7 @@ JSON,
 
     public static function plugin_action_links($links)
     {
-        $link = '<a href="' . esc_url(admin_url('options-general.php?page=QPlayer2')) . '">' . __('设置') . '</a>';
+        $link = '<a href="' . esc_url(admin_url('options-general.php?page=QPlayer2')) . '">' . __('设置', 'QPlayer2') . '</a>';
         array_unshift($links, $link);
         return $links;
     }
@@ -139,7 +139,7 @@ JSON,
 
         $this->checkbox(
             'general',
-            __('常规'),
+            __('常规', 'QPlayer2'),
             array(
                 'cdn' => '使用 jsDelivr CDN 免费加速 js、css 文件',
                 'jQuery' => '加载 jQuery。若冲突，请关闭',
@@ -150,23 +150,23 @@ JSON,
 
         $this->text(
             'color',
-            __('主题颜色'),
-            __('默认：<span style="color: #EE1122">#EE1122</span>')
+            __('主题颜色', 'QPlayer2'),
+            __('默认：<span style="color: #EE1122">#EE1122</span>', 'QPlayer2')
         );
 
         $this->radio(
             'bitrate',
-            __('默认音质'),
+            __('默认音质', 'QPlayer2'),
             array(
-                '128' => __('流畅品质 128K'),
-                '192' => __('清晰品质 192K'),
-                '320' => __('高品质 320K')
+                '128' => __('流畅品质 128K', 'QPlayer2'),
+                '192' => __('清晰品质 192K', 'QPlayer2'),
+                '320' => __('高品质 320K', 'QPlayer2')
             )
         );
 
         $this->textarea(
             'list',
-            __('歌曲别表'),
+            __('歌曲别表', 'QPlayer2'),
             __(<<<HTML
 <a href="https://www.json.cn/">JSON 格式</a> 的数组，具体属性请看 <a href="https://github.com/moeshin/QPlayer2#list-item">这里</a><br>
 您也可以添加，例如：私人雷达<br>
@@ -179,7 +179,7 @@ HTML)
 
         $this->textarea(
             'cookie',
-            __('网易云音乐 Cookie'),
+            __('网易云音乐 Cookie', 'QPlayer2'),
             __(<<<HTML
 如果您是网易云音乐的会员或者使用私人雷达，可以将您的 cookie 的 MUSIC_U 填入此处来获取云盘等付费资源，听歌将不会计入下载次数<br>
 <strong>如果不知道这是什么意思，忽略即可</strong>
@@ -188,25 +188,25 @@ HTML)
 
         $this->radio(
             'cacheType',
-            __('缓存类型'),
+            __('缓存类型', 'QPlayer2'),
             array(
-                'none' => __('无'),
-                'database' => __('数据库'),
-                'memcached' => __('Memcached'),
-                'redis' => __('Redis')
+                'none' => __('无', 'QPlayer2'),
+                'database' => __('数据库', 'QPlayer2'),
+                'memcached' => __('Memcached', 'QPlayer2'),
+                'redis' => __('Redis', 'QPlayer2')
             )
         );
 
         $this->text(
             'cacheHost',
-            __('缓存地址'),
-            __('若使用数据库缓存，请忽略此项。默认：127.0.0.1')
+            __('缓存地址', 'QPlayer2'),
+            __('若使用数据库缓存，请忽略此项。默认：127.0.0.1', 'QPlayer2')
         );
 
         $this->text(
             'cachePort',
-            __('缓存端口'),
-            __('若使用数据库缓存，请忽略此项。默认，Memcached：11211；Redis：6379')
+            __('缓存端口', 'QPlayer2'),
+            __('若使用数据库缓存，请忽略此项。默认，Memcached：11211；Redis：6379', 'QPlayer2')
         );
 
         add_settings_field(
@@ -214,7 +214,7 @@ HTML)
             null,
             function () {
                 echo '<a target="_blank" href="' . admin_url('admin-ajax.php?action=QPlayer2') . '&do=flush">
-<button type="button" class="button">' . __('清除缓存') . '</button></a>';
+<button type="button" class="button">' . __('清除缓存', 'QPlayer2') . '</button></a>';
             },
             self::PAGE,
             self::SECTION
