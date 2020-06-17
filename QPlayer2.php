@@ -26,13 +26,16 @@ class QPlayer2
         if (is_admin()) {
             $this->onAdmin();
         }
+
         add_action('wp_footer', array($this, 'footer'));
         add_action('wp_ajax_QPlayer2', array($this, 'ajax'));
         add_action('wp_ajax_nopriv_QPlayer2', array($this, 'ajax'));
+
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
     }
 
-    public function deactivate() {
+    public function deactivate()
+    {
         $options = $this->options;
         $cacheType = $options['cacheType'];
         if ($cacheType != 'none') {
@@ -84,9 +87,19 @@ JSON,
     {
         add_action('admin_menu', array($this, 'add_plugin_page'));
         add_action('admin_init', array($this, 'page_init'));
+
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'plugin_action_links'));
     }
 
-    public function add_plugin_page() {
+    public static function plugin_action_links($links)
+    {
+        $link = '<a href="' . esc_url(admin_url('options-general.php?page=QPlayer2')) . '">' . __('设置') . '</a>';
+        array_unshift($links, $link);
+        return $links;
+    }
+
+    public function add_plugin_page()
+    {
         add_options_page(
             "QPlayer2",
             "QPlayer2",
