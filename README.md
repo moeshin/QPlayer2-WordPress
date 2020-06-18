@@ -4,9 +4,11 @@
 
 ### 安装
 
-1. [下载](https://github.com/moeshin/QPlayer2-Typecho/releases/latest) 或克隆此工程
-2. 将文件夹重命名为 `QPlayer2`，并放到 WorldPress 的插件目录，默认 `wp-content/plugins`
+1. [下载](https://github.com/moeshin/QPlayer2-WordPress/releases/latest) 或克隆此工程
+2. 将文件夹重命名为 `QPlayer2`，并放到 WordPress 的插件目录，默认 `wp-content/plugins`
 3. 在后台启用插件
+
+<!--more-->
 
 ### 歌曲列表
 
