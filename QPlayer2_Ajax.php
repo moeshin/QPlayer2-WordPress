@@ -77,6 +77,11 @@ class QPlayer2_Ajax
                 case 'artist':
                     $arg2 = 50;
                     break;
+                default:
+                    if ($cache != null && 'neteaseplaylist3136952023' === $key) {
+                        date_default_timezone_set('Asia/Shanghai');
+                        $expire = strtotime('+1 day, 00:01:00') - time();
+                    }
             }
             $data = $m->$type($id, $arg2);
             $data = json_decode($data, true);
