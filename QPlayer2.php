@@ -264,8 +264,9 @@ HTML;
             $id,
             $title,
             function () use ($that, $id, $options) {
+                $option = $that->options[$id];
                 foreach ($options as $value => $text) {
-                    $checked = $that->checked($that->options[$id] == $value);
+                    $checked = $that->checked($option == $value);
                     $cid = "$id-$value";
                     echo <<<HTML
 <p>
@@ -425,7 +426,6 @@ HTML;
     {
         $this->initOptions();
         $url = plugins_url('assets', __FILE__);
-        var_dump($url);
         $cdn = $this->getBool('cdn');
         if ($this->getBool('jQuery')) {
             $prefix = $cdn ? 'https://cdn.jsdelivr.net/npm/jquery@' . self::verJQ . '/dist' : $url;
