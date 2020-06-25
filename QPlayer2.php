@@ -367,8 +367,8 @@ HTML;
         $cacheTypeNow = $input['cacheType'];
         $cacheArgs = array(
             $cacheTypeNow,
-            $options['cacheHost'],
-            $options['cachePort']
+            $input['cacheHost'],
+            $input['cachePort']
         );
         $cacheTypeLast = $options['cacheType'];
         $cacheBuild = array('QPlayer\Cache\Cache', 'Build');
