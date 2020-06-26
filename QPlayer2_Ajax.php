@@ -128,7 +128,7 @@ class QPlayer2_Ajax
             case 'pic':
             case 'audio':
             case 'cover':
-                header('Location: ' . $data, false, 301);
+                header('Location: ' . $data, false, 302);
                 break;
             case 'lrc':
             case 'lyric':
