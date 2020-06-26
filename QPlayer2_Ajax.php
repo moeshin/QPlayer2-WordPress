@@ -64,6 +64,7 @@ class QPlayer2_Ajax
                 case 'audio':
                     $type = 'url';
                     $arg2 = $options['bitrate'];
+                    $expire = 1200;
                     break;
                 case 'cover':
                     $type = 'pic';
