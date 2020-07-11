@@ -172,7 +172,8 @@ class QPlayer2
 <code>{"server": "netease", "type": "playlist", "id": "3136952023"}</code><br>
 来引入第三方资源，此功能基于 <a href="https://github.com/metowolf/Meting">Meting</a><br>
 <code>server</code>：netease、tencent、baidu、xiami、kugou<br>
-<code>type</code>：playlist、song、album、artist
+<code>type</code>：playlist、song、album、artist<br>
+（附：<a target="_blank" href="https://github.com/moeshin/netease-music-dynamic-playlist">网易云动态歌单整理</a>）
 ')
         );
 
