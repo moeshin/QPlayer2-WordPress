@@ -11,9 +11,6 @@ use QPlayer\Cache\Cache;
 
 class QPlayer2
 {
-    const verJQ = '3.5.1';
-    const verMarquee = '1.5.0';
-
     const OPTION_NAME = 'QPlayer2_options';
     const OPTION_GROUP = 'QPlayer2_group';
     const PAGE = 'QPlayer2_settings';
@@ -56,7 +53,7 @@ class QPlayer2
 
     private function getDefault()
     {
-        $names = array('cdn', 'jQuery', 'isRotate', 'isShuffle');
+        $names = array('cdn', 'isRotate', 'isShuffle');
         $r = array(
             'bitrate' => '320',
             'color' => '#EE1122',
@@ -140,9 +137,9 @@ class QPlayer2
             __('常规', 'QPlayer2'),
             array(
                 'cdn' => '使用 jsDelivr CDN 免费加速 js、css 文件',
-                'jQuery' => '加载 jQuery。若冲突，请关闭',
                 'isRotate' => '旋转封面',
-                'isShuffle' => '随机播放'
+                'isShuffle' => '随机播放',
+                'isAutoplay' => '自动播放'
             )
         );
 
@@ -323,9 +320,9 @@ HTML;
         // Normal
         $keys = array(
             'cdn',
-            'jQuery',
             'isRotate',
             'isShuffle',
+            'isAutoplay',
             'bitrate',
             'cacheType'
         );
@@ -425,20 +422,12 @@ HTML;
     public function footer()
     {
         $this->initOptions();
-        $url = plugins_url('assets', __FILE__);
-        $cdn = $this->getBool('cdn');
-        if ($this->getBool('jQuery')) {
-            $prefix = $cdn ? 'https://cdn.jsdelivr.net/npm/jquery@' . self::verJQ . '/dist' : $url;
-            echo '<script src="' . $prefix  . '/jquery.min.js"></script>';
-        }
-        $prefix = $cdn ? 'https://cdn.jsdelivr.net/npm/jquery.marquee@' . self::verMarquee : $url;
-        echo '<script src="' . $prefix . '/jquery.marquee.min.js"></script>';
-        if ($cdn) {
+        if ($this->getBool('cdn')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
             $info = get_plugin_data(__FILE__, false, false);
             $prefix = 'https://cdn.jsdelivr.net/gh/moeshin/QPlayer2-WordPress@' . $info['Version'] . '/assets';
         } else {
-            $prefix = $url;
+            $prefix = plugins_url('assets', __FILE__);
         }
         $api = admin_url('admin-ajax.php?action=QPlayer2');
         /**
@@ -446,19 +435,23 @@ HTML;
          * @noinspection JSUnnecessarySemicolon
          */
         echo <<<HTML
-<link rel="stylesheet" href="$prefix/QPlayer.css">
-<script src="$prefix/QPlayer.js"></script>
+<link rel="stylesheet" href="$prefix/QPlayer.min.css">
+<script src="$prefix/QPlayer.min.js"></script>
 <script src="$prefix/QPlayer-plugin.js"></script>
 <script>
-$(function() {
-    var q = QPlayer;
+(function() {
+    var q = window.QPlayer;
     var plugin = q.plugin;
+    var $ = q.$;
     plugin.api = '$api';
     plugin.setList({$this->getString('list')});
     q.isRoate = {$this->getBoolString('isRotate')};
     q.isShuffle = {$this->getBoolString('isShuffle')};
-    q.setColor('{$this->getString('color')}');
-});
+    q.isAutoplay = {$this->getBoolString('isAutoplay')};
+    $(function () {
+        q.setColor('{$this->getString('color')}');
+    });
+})();
 </script>
 HTML;
     }
