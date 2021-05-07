@@ -53,7 +53,13 @@ class QPlayer2
 
     private function getDefault()
     {
-        $names = array('cdn', 'isRotate', 'isShuffle');
+        $names = array(
+            'cdn',
+            'isRotate',
+            'isShuffle',
+            'isPauseOtherWhenPlay',
+            'isPauseWhenOtherPlay'
+        );
         $r = array(
             'bitrate' => '320',
             'color' => '#EE1122',
@@ -139,7 +145,9 @@ class QPlayer2
                 'cdn' => '使用 jsDelivr CDN 免费加速 js、css 文件',
                 'isRotate' => '旋转封面',
                 'isShuffle' => '随机播放',
-                'isAutoplay' => '自动播放'
+                'isAutoplay' => '自动播放',
+                'isPauseOtherWhenPlay' => '在播放时暂停其他媒体',
+                'isPauseWhenOtherPlay' => '在其他媒体播放时暂停'
             )
         );
 
@@ -323,6 +331,8 @@ HTML;
             'isRotate',
             'isShuffle',
             'isAutoplay',
+            'isPauseOtherWhenPlay',
+            'isPauseWhenOtherPlay',
             'bitrate',
             'cacheType'
         );
@@ -448,6 +458,8 @@ HTML;
     q.isRoate = {$this->getBoolString('isRotate')};
     q.isShuffle = {$this->getBoolString('isShuffle')};
     q.isAutoplay = {$this->getBoolString('isAutoplay')};
+    q.isPauseOtherWhenPlay = {$this->getBoolString('isPauseOtherWhenPlay')};
+    q.isPauseWhenOtherPlay = {$this->getBoolString('isPauseWhenOtherPlay')};
     $(function () {
         q.setColor('{$this->getString('color')}');
     });
