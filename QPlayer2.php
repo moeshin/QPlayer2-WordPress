@@ -3,7 +3,7 @@
 Plugin Name: QPlayer2
 Description: 一款简洁小巧的 HTML5 底部悬浮音乐播放器
 Author: MoeShin
-Version: 2.0.6
+Version: 2.0.7
 Author URI: https://moeshin.com/
 */
 
