@@ -68,7 +68,7 @@ class QPlayer2_Ajax
                     break;
                 case 'cover':
                     $type = 'pic';
-                    $arg2 = 64;
+                    $arg2 = 300;
                     $expire = 86400;
                     break;
                 case 'lrc':
